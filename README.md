@@ -1,1 +1,0 @@
-# mas-gh-action-corellium
