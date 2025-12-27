@@ -172,7 +172,7 @@ jobs:
         run: |
           source ./src/functions.sh && set -euo pipefail
           if [ -z "${CORELLIUM_INSTANCE_ID:-}" ]; then
-            log_info 'CORELLIUM_INSTANCE_ID is not set.'
+            log_stdout 'CORELLIUM_INSTANCE_ID is not set.'
           elif does_instance_exist "${CORELLIUM_INSTANCE_ID}"; then
             log_stdout "Ready to delete ephemeral instance ${CORELLIUM_INSTANCE_ID}."
             stop_instance "${CORELLIUM_INSTANCE_ID}" || true
