@@ -47,9 +47,9 @@ jobs:
         with:
           cache: npm
           node-version: 24
-          cache-dependency-path: src/corellium/package-lock.json
+          cache-dependency-path: src/package-lock.json
       - name: Check Node package lock
-        working-directory: src/corellium
+        working-directory: src
         run: |
           npm install --package-lock-only --quiet --no-audit --no-fund
           if ! git diff --quiet package-lock.json; then
@@ -65,10 +65,10 @@ jobs:
         uses: actions/setup-python@v6
         with:
           cache: pip
-          cache-dependency-path: src/corellium/requirements.txt
+          cache-dependency-path: src/requirements.txt
           python-version: 3.14
       - name: Install API dependencies
-        working-directory: src/corellium
+        working-directory: src
         run: |
           npm ci
           echo "$(pwd)/node_modules/.bin" >> "${GITHUB_PATH}"
@@ -162,7 +162,7 @@ jobs:
       - name: Run frida script
         timeout-minutes: 2
         env:
-          FRIDA_SCRIPT_PATH: src/corellium/frida_script_example.js
+          FRIDA_SCRIPT_PATH: src/frida_script_example.js
         run: |
           source ./src/functions.sh && set -euo pipefail
           run_frida_script_usb "${{ matrix.corellium_cafe_app_id }}" "${FRIDA_SCRIPT_PATH}"
