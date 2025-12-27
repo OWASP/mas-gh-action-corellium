@@ -82,7 +82,7 @@ jobs:
       - name: Wait until available cores
         timeout-minutes: 30
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           [ -z "${CORELLIUM_DEFAULT_PROJECT}" ] && {
             log_error 'CORELLIUM_DEFAULT_PROJECT must be set.'
             exit 1
@@ -97,7 +97,7 @@ jobs:
         env:
           CORELLIUM_API_TOKEN: ${{ secrets.CORELLIUM_API_TOKEN }}
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           log_stdout "Creating ephemeral instance."
           CREATED_CORELLIUM_INSTANCE_ID="$(create_instance \
             "${{ matrix.hardware_flavor }}" \
@@ -109,7 +109,7 @@ jobs:
           log_stdout 'Saved ephemeral instance ID as environmental variable.'
       - name: Install additional runner dependencies
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           install_frida_dependencies
           install_openvpn_dependencies
           if [ "${{ matrix.hardware_flavor }}" = 'ranchu' ]; then
@@ -120,7 +120,7 @@ jobs:
       - name: Wait for instance agent ready
         timeout-minutes: 20
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           start_instance "${CORELLIUM_INSTANCE_ID}"
           wait_until_agent_ready "${CORELLIUM_INSTANCE_ID}"
           [ "${{ matrix.hardware_flavor }}" == 'ranchu' ] ||
@@ -128,14 +128,14 @@ jobs:
       - name: Connect to project VPN
         timeout-minutes: 2
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           connect_to_vpn_for_instance \
             "${CORELLIUM_INSTANCE_ID}" \
             "${{ env.VPN_CONFIG_PATH }}"
       - name: Connect to device
         timeout-minutes: 1
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           if [ "${{ matrix.hardware_flavor }}" = 'ranchu' ]; then
             connect_with_adb "${CORELLIUM_INSTANCE_ID}"
           else
@@ -148,7 +148,7 @@ jobs:
         env:
           CORELLIUM_API_TOKEN: ${{ secrets.CORELLIUM_API_TOKEN }}
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           kill_app "${CORELLIUM_INSTANCE_ID}" "${{ matrix.corellium_cafe_app_id }}"
           install_app_from_url "${CORELLIUM_INSTANCE_ID}" "${{ matrix.corellium_cafe_source_url }}"
       - name: Launch Cafe and run frida-ps
@@ -156,7 +156,7 @@ jobs:
         env:
           CORELLIUM_API_TOKEN: ${{ secrets.CORELLIUM_API_TOKEN }}
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           launch_app "${CORELLIUM_INSTANCE_ID}" "${{ matrix.corellium_cafe_app_id }}"
           run_frida_ps_usb
       - name: Run frida script
@@ -164,13 +164,13 @@ jobs:
         env:
           FRIDA_SCRIPT_PATH: src/corellium/frida_script_example.js
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           run_frida_script_usb "${{ matrix.corellium_cafe_app_id }}" "${FRIDA_SCRIPT_PATH}"
       - name: Delete instance
         if: always()
         timeout-minutes: 15
         run: |
-          source ./src/corellium/functions.sh && set -euo pipefail
+          source ./src/functions.sh && set -euo pipefail
           if [ -z "${CORELLIUM_INSTANCE_ID:-}" ]; then
             log_info 'CORELLIUM_INSTANCE_ID is not set.'
           elif does_instance_exist "${CORELLIUM_INSTANCE_ID}"; then
