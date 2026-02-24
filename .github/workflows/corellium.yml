@@ -118,7 +118,7 @@ jobs:
             install_usbfluxd_and_dependencies
           fi
       - name: Wait for instance agent ready
-        timeout-minutes: 20
+        timeout-minutes: 30
         run: |
           source ./src/functions.sh && set -euo pipefail
           start_instance "${CORELLIUM_INSTANCE_ID}"
