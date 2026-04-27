@@ -1,11 +1,11 @@
 name: Run Frida script
 
 on:
-#   pull_request:
+  pull_request:
+    branches: master
 #     types: [opened, synchronize, reopened]
-
-#   push:
-#     branches: master
+  push:
+    branches: master
   schedule:
     - cron: "18 07 * * *"
   workflow_dispatch:
